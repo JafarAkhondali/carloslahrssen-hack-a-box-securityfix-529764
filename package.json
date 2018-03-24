@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/carloslahrssen/hack-a-box#readme",
   "dependencies": {
-    "express": "^4.16.3"
+    "express": "^4.16.3",
+    "mongodb-stitch": "^3.0.7"
   }
 }
