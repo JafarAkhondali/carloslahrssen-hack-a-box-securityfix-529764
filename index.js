@@ -5,6 +5,7 @@ const exphbs = require('express-handlebars');
 let appId = 'hack-a-box-obkyj';
 
 const clientPromise = Stitch.StitchClientFactory.create('hack-a-box-obkyj');
+app.use(express.static('views'));
 
 let boxes;
 let users;
@@ -81,6 +82,7 @@ app.get('/getChallenge', (req, res) => {
                     {
                         "workingBoxes":
                         {
+                            "id":"boxId",
                             "questionNumber":user.workingBoxes.questionNumber++
                         }
                     }
@@ -129,14 +131,19 @@ app.get('/postPicture', (req, res) => {
 });
 
 app.get('/getBox', (req, res) => {
-    boxes.findOne({'boxUrl':'google.com'})
+    boxes.find({}).limit(3).execute()
         .then(docs => {
+            console.log(docs);
             return docs
         });
 });
 
 app.get('/', (req, res) => {
-    res.render('home', {layout:false});
+    res.render('index', {layout:false});
+});
+
+app.get('/login', (req, res) => {
+    res.render('login');
 });
 
 app.listen(3000);
