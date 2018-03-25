@@ -2,6 +2,8 @@ const express = require('express');
 const app = express();
 const Stitch = require('mongodb-stitch');
 const exphbs = require('express-handlebars');
+const FormData = require('form-data');
+const axios = require('axios');
 let appId = 'hack-a-box-obkyj';
 
 const clientPromise = Stitch.StitchClientFactory.create('hack-a-box-obkyj');
@@ -136,6 +138,35 @@ app.get('/getBox', (req, res) => {
             console.log(docs);
             return docs
         });
+});
+
+app.get('/comparePhoto', () => {
+
+    let formData = new FormData();
+    let urler = 'http://fa6f1732.ngrok.io';
+
+    axios(urler, {
+    method: 'GET',
+    }).then(function(response) {
+        console.log('response::', response.data);
+        let imagefileString = response.data;
+        let imagefile = new Buffer(imagefileString, 'base64');
+
+        return imagefile;
+    })
+    .then((imagefile) => {
+        formData.append("image", imagefile);
+    })
+    .then(() => {
+        url = 'https://mixtape.moe/upload.php';
+        axios.post(url, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+        .then((response) => {console.log(response)})
+    });
+
 });
 
 app.get('/', (req, res) => {
