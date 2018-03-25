@@ -38,11 +38,13 @@ app.post('/sendCode', (req, res) => {
 app.get('/getUser', (req, res)=>{
     users.findOne({"token": "testSix"})
         .then((doc) => {
-            console.log(doc);
+            return doc;
         });
 });
 
 app.get('/createBox', (req, res) => {
+    let boxurl = req
+
     boxes.insertOne({boxUrl: "google.com", question: [0,1,2], isClaimed:false, s3Link: "jabroni.com"})
         .then((docs)=>{console.log(docs)});
 });
@@ -97,9 +99,6 @@ app.get('/getChallenge', (req, res) => {
 
 });
 
-app.post('/createQuestions', (req, res) => {
-    questions.insertOne({});
-});
 
 app.get('/getQuestions', (req, res) => {
     questions.findOne({questionNumber:1})
@@ -108,19 +107,7 @@ app.get('/getQuestions', (req, res) => {
         });
 });
 
-app.post('/signIn', (req,res) => {
-    let user = req.body[0];
-    //if token exists then update user object,
-    users.insertOne({user})
-        .then((docs) => console.log(docs));
-});
 
-app.get('/validateChallenge', (req, res) => {
-    //return true or false, if true alter boxes
-    //eval req.body.textField
-    let solution = req.body[0];
-    let questionNumber = 1;
-});
 
 app.get('/postPicture', (req, res) => {
     s3.put({
