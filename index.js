@@ -2,9 +2,12 @@ const express = require('express');
 const app = express();
 const Stitch = require('mongodb-stitch');
 const exphbs = require('express-handlebars');
+const FormData = require('form-data');
+const axios = require('axios');
 let appId = 'hack-a-box-obkyj';
 
 const clientPromise = Stitch.StitchClientFactory.create('hack-a-box-obkyj');
+app.use(express.static('views'));
 
 let boxes;
 let users;
@@ -81,6 +84,7 @@ app.get('/getChallenge', (req, res) => {
                     {
                         "workingBoxes":
                         {
+                            "id":"boxId",
                             "questionNumber":user.workingBoxes.questionNumber++
                         }
                     }
@@ -129,14 +133,48 @@ app.get('/postPicture', (req, res) => {
 });
 
 app.get('/getBox', (req, res) => {
-    boxes.findOne({'boxUrl':'google.com'})
+    boxes.find({}).limit(3).execute()
         .then(docs => {
+            console.log(docs);
             return docs
         });
 });
 
+app.get('/comparePhoto', () => {
+
+    let formData = new FormData();
+    let urler = 'http://fa6f1732.ngrok.io';
+
+    axios(urler, {
+    method: 'GET',
+    }).then(function(response) {
+        console.log('response::', response.data);
+        let imagefileString = response.data;
+        let imagefile = new Buffer(imagefileString, 'base64');
+
+        return imagefile;
+    })
+    .then((imagefile) => {
+        formData.append("image", imagefile);
+    })
+    .then(() => {
+        url = 'https://mixtape.moe/upload.php';
+        axios.post(url, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+        .then((response) => {console.log(response)})
+    });
+
+});
+
 app.get('/', (req, res) => {
-    res.render('home', {layout:false});
+    res.render('index', {layout:false});
+});
+
+app.get('/login', (req, res) => {
+    res.render('login');
 });
 
 app.listen(3000);
